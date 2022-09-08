@@ -1,7 +1,7 @@
 <?php
 
 
-include('db_config_doctrack.php');
+include('db_config.php');
 // include('db_config_vamos.php');
 
 
