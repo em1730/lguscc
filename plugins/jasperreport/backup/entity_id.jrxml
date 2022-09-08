@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 7.8.0.final using JasperReports Library version 6.14.0-2ab0d8625be255bf609c78e1181801213e51db8f  -->
+<!-- 2020-09-27T02:13:04 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="entity_id" language="javascript" pageWidth="172" pageHeight="720" columnWidth="172" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a8b35d81-fbfe-4639-a04a-fd350f424dec">
+	<property name="ireport.zoom" value="0.75"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="sccdrrmo.xml"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<queryString>
+		<![CDATA[select * from tbl_individual]]>
+	</queryString>
+	<field name="entity_no" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="entity_no"/>
+		<property name="com.jaspersoft.studio.field.label" value="entity_no"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="date_register" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="date_register"/>
+		<property name="com.jaspersoft.studio.field.label" value="date_register"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="username" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="username"/>
+		<property name="com.jaspersoft.studio.field.label" value="username"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="password" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="password"/>
+		<property name="com.jaspersoft.studio.field.label" value="password"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fullname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fullname"/>
+		<property name="com.jaspersoft.studio.field.label" value="fullname"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="firstname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="firstname"/>
+		<property name="com.jaspersoft.studio.field.label" value="firstname"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="middlename" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="middlename"/>
+		<property name="com.jaspersoft.studio.field.label" value="middlename"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="lastname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lastname"/>
+		<property name="com.jaspersoft.studio.field.label" value="lastname"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="barangay" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="barangay"/>
+		<property name="com.jaspersoft.studio.field.label" value="barangay"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="photo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="photo"/>
+		<property name="com.jaspersoft.studio.field.label" value="photo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="street" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="street"/>
+		<property name="com.jaspersoft.studio.field.label" value="street"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="age" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="age"/>
+		<property name="com.jaspersoft.studio.field.label" value="age"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="gender" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="gender"/>
+		<property name="com.jaspersoft.studio.field.label" value="gender"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="birthdate" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="birthdate"/>
+		<property name="com.jaspersoft.studio.field.label" value="birthdate"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="city" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="city"/>
+		<property name="com.jaspersoft.studio.field.label" value="city"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="province" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="province"/>
+		<property name="com.jaspersoft.studio.field.label" value="province"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="contact_no" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="contact_no"/>
+		<property name="com.jaspersoft.studio.field.label" value="contact_no"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="email_address" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="email_address"/>
+		<property name="com.jaspersoft.studio.field.label" value="email_address"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="qr_code" class="byte[]">
+		<property name="com.jaspersoft.studio.field.name" value="qr_code"/>
+		<property name="com.jaspersoft.studio.field.label" value="qr_code"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tbl_individual"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="firstname1" class="java.lang.Integer" calculation="DistinctCount">
+		<variableExpression><![CDATA[$F{firstname}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="330">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<image>
+				<reportElement x="0" y="0" width="172" height="300" uuid="48bc2966-2e95-43d4-82e4-681e86eb36a0"/>
+				<imageExpression><![CDATA["/opt/bitnami/apache2/htdocs/sccdrrmo/individual_id.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="2" y="266" width="165" height="20" uuid="5988ae26-9b33-4652-b746-fc3f59698cf7"/>
+				<textElement textAlignment="Center">
+					<font isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{entity_no}]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement x="10" y="166" width="141" height="90" uuid="3e8c999d-9fa5-4c88-9fc9-cb907d5f85d9">
+					<property name="com.jaspersoft.studio.unit.margin" value="px"/>
+				</reportElement>
+				<jr:QRCode xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" margin="1" qrVersion="2">
+					<jr:codeExpression><![CDATA[$F{entity_no}]]></jr:codeExpression>
+				</jr:QRCode>
+			</componentElement>
+			<textField>
+				<reportElement x="2" y="136" width="165" height="30" uuid="0497b90a-ee06-4f6e-a11f-512d54179992"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fullname}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="68" y="200" width="25" height="25" uuid="c4a3f5b1-5452-4beb-b70c-b93cc628474c"/>
+				<imageExpression><![CDATA["LOGO-png.png"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band/>
+	</pageFooter>
+	<lastPageFooter>
+		<band/>
+	</lastPageFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>
