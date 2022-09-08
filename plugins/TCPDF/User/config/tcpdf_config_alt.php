@@ -1,5 +1,7 @@
 <?php
 
+
+
 define ('K_TCPDF_EXTERNAL_CONFIG', true);
 
 define ('K_PATH_IMAGES', dirname(__FILE__).'/../images/');
@@ -20,7 +22,7 @@ define ('PDF_CREATOR', 'TCPDF');
 
 define ('PDF_AUTHOR', 'TCPDF');
 
-define ('PDF_HEADER_TITLE', 'LguSCC Records Management System');
+define ('PDF_HEADER_TITLE', 'LGUSCC Management System');
 
 define ('PDF_HEADER_STRING',"Province of Negros Occidental \nCity of San Carlos\n");
 

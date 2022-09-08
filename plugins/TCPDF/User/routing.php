@@ -3,7 +3,7 @@ ob_start();
 session_start();
 
 require_once('tcpdf_include.php');
-include('../../../config/db_config.php');
+include('../../../config/credentials.php');
 
 
 $width = 10;
@@ -95,7 +95,7 @@ $html .= '
 
 //select all users
 $get_document_sql = "SELECT * FROM tbl_ledger WHERE docno = :docno";
-$get_document_data = $con->prepare($get_document_sql);
+$get_document_data = $db_dts->prepare($get_document_sql);
 $get_document_data->execute([':docno'=>$docno]);
 $row = $get_document_data->rowcount();
 

@@ -1,0 +1,76 @@
+$html .= '<table border="1" width="100%" cellspacing="0" cellpadding="5">';
+    $html .= '
+
+    <thead>
+
+        <tr bgcolor="lightblue">
+            <th width="43%" style="text-align:center;"><b>NAMES</b></th>
+            <th width="50%" style="text-align:center;"><b>PERIOD COVERED</b></th>
+
+
+        </tr>
+    </thead>
+    ';
+    if ($jono==$jono) {
+    $schedule=$_GET['JobOrderNo'];
+    $get_schedule_sql = "SELECT * FROM schedule WHERE JobOrderNo = :JobOrderNo ORDER BY LName ASC";
+    $get_schedule_data1 = $con->prepare($get_schedule_sql);
+    $get_schedule_data1->execute([':JobOrderNo' => $schedule]);
+    while ($result = $get_schedule_data1->fetch(PDO::FETCH_ASSOC)) {
+
+
+    $jo_fname = ucwords(strtoupper($result['FName']));
+    $jo_mname = ucwords(strtoupper($result['MName']));
+    $jo_lname = ucwords(strtoupper($result['LName']));
+    $jo_rate = $result['Rate'];
+    $jo_period = $result['Period'];
+    $jo_days1 = $result['RegDays'];
+    $jo_days_2 = $result['RegDays2'];
+    $jo_time = $result['Time1'];
+    $jo_total = $result['no'];
+    $jo_month1 = $result['Month1'];
+    $jo_month2 = $result['Month2'];
+    $jo_days2 = $result['Days1'];
+    $jo_days3 = $result['Days2'];
+    $jo_year = $result['Years'];
+    $jo_rate1 = $result['Rate1'];
+    $jo_rate2 = $result['Rate2'];
+    $jo_time1 = $result['Time2'];
+    $jo_time2 = $result['Time3'];
+    $jo_sched = $result['Schedule'];
+    $jo_sched1 = $result['Schedule1'];
+    $jo_sched2 = $result['Schedule2'];
+
+
+
+
+    $html .= '
+
+
+
+    <tbody>
+        <tr>
+            <td width="18%" style="font-size:12px;">'. $jo_lname.'</td>
+            <td width="3%" style="text-align:center; font-size:12px">'.','.'</td>
+            <td width="17%" style="font-size:12px;">'. $jo_fname.'</td>
+            <td width="5%" style="text-align:center; font-size:12px">'. $jo_mname[0].'.'.'</td>
+            <td width="50%" style="text-align:center; font-size:11px">'.$jo_period.' '.' '.$jo_days1.'-'.$jo_days_2.','.' '.$jo_year.' '.'@'.' '.$jo_rate.''.'/day'.' '.$jo_time.'('.$jo_sched.')'.'
+                <br>
+                '.$jo_month1.' '.' '.$jo_days2.','.' '.$jo_year.' '.'@'.' '.$jo_rate1.''.'/day'.' '.$jo_time1.'('.$jo_sched1.')'.'
+                <br>
+                '.$jo_month2.' '.' '.$jo_days3.','.' '.$jo_year.' '.'@'.' '.$jo_rate2.''.'/day'.' '.$jo_time2.'('.$jo_sched2.')'.'
+            </td>
+        </tr>
+
+
+
+
+    </tbody>
+    ';
+    }
+
+    }
+    $html .= '
+</table>';
+
+}
