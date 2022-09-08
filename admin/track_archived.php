@@ -1,11 +1,8 @@
 <?php
 session_start();
 /* Database connection start */
-$servername = "192.168.0.1";
-$username = "root";
-$password = "1234";
-$dbname = "scc_doctrack";
-$office = $_POST['office'];
+include('../config/credentials.php');
+
 
 
 $conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
@@ -52,7 +49,7 @@ $columns = array(
 // getting total number records without any search
 $sql = "SELECT docno, date, type, particulars, origin, status, remarks";
 $sql.=" FROM tbl_documents where status = 'ARCHIVED' and destination = '$office'" ;
-$query=mysqli_query($conn, $sql) or die("track_archived.php");
+$query=mysqli_query($db_dts, $sql) or die("track_archived.php");
 $totalData = mysqli_num_rows($query);
 $totalFiltered = $totalData;  // when there is no search parameter then total number rows = total number filtered rows.
 
@@ -69,13 +66,13 @@ if( !empty($requestData['search']['value']) ) {   // if there is a search parame
 	$sql.=" OR status LIKE '%".$requestData['search']['value']."%' ";
 	$sql.=" OR remarks LIKE '%".$requestData['search']['value']."%' )";
 }
-$query=mysqli_query($conn, $sql) or die("track_archived.php");
+$query=mysqli_query($db_dts, $sql) or die("track_archived.php");
 $totalFiltered = mysqli_num_rows($query); // when there is a search parameter then we have to modify total number filtered rows as per search result. 
 $sql.=" ORDER BY date DESC  LIMIT ".$requestData['start']." ,".$requestData['length']."   ";
 
 // $sql.=" ORDER BY ". $columns[$requestData['order'][0]['column']]."   ".$requestData['order'][0]['dir']."  LIMIT ".$requestData['start']." ,".$requestData['length']."   ";
 /* $requestData['order'][0]['column'] contains colmun index, $requestData['order'][0]['dir'] contains order such as asc/desc  */	
-$query=mysqli_query($conn, $sql) or die("track_archived.php");
+$query=mysqli_query($db_dts, $sql) or die("track_archived.php");
 
 $data = array();
 while( $row=mysqli_fetch_array($query) ) {  // preparing an array

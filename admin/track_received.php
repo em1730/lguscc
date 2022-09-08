@@ -7,14 +7,16 @@ session_start();
 // $dbname = "scc_doctrack";
 // $office = $_POST['office'];
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "scc_doctrack";
+// $servername = "192.168.0.5";
+// $username = "root";
+// $password = "1234";
+// $dbname = "scc_doctrack";
+include('../config/credentials.php');
+
 $office = $_POST['office'];
 
 
-$conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
+// $conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
 
 
 // $get_user_sql = "SELECT * FROM tbl_users WHERE user_id = :id";
@@ -59,37 +61,69 @@ $columns = array(
 
 
 // getting total number records without any search
-$sql = "SELECT docno, date, type, obrno, dvno, payee, particulars, amount, origin";
-$sql.=" FROM tbl_documents where status = 'RECEIVED' and destination = '$office' ORDER BY date DESC LIMIT ".$requestData['start']." ,".$requestData['length']."  "; ;
-$query=mysqli_query($conn, $sql) or die("track_incoming.php");
-$totalData = mysqli_num_rows($query);
-$totalFiltered = $totalData;  // when there is no search parameter then total number rows = total number filtered rows.
+$getAllReceivedDocuments = "SELECT * FROM tbl_documents where status  ='RECEIVED' AND destination = :office 
+	ORDER BY date_time DESC LIMIT " . $requestData['start'] . "," . $requestData['length'] . " " ;
+
+$getAllReceivedDocumentsData = $db_dts->prepare($getAllReceivedDocuments);
+$getAllReceivedDocumentsData->execute(['office' => $office]);
 
 
-$sql = "SELECT docno, date, type, obrno, dvno, payee, particulars, amount, origin";
-$sql.=" FROM tbl_documents where status = 'RECEIVED' and destination = '$office'";
+$countNoFilter = "SELECT COUNT(docno) as id from tbl_documents";
+$getrecordstmt = $db_dts->prepare($countNoFilter);
+$getrecordstmt->execute() or die("track_received.php");
+$getrecord = $getrecordstmt->fetch(PDO::FETCH_ASSOC);
+$totalData = $getrecord['id'];
+$totalFiltered = $totalData; 
+
+
+
+ // when there is no search parameter then total number rows = total number filtered rows.
+
+
+$getAllReceivedDocuments = "SELECT * from tbl_documents where ";
+
 if( !empty($requestData['search']['value']) ) {   // if there is a search parameter, $requestData['search']['value'] contains search parameter
-	$sql.=" AND ( docno LIKE '%".$requestData['search']['value']."%' ";    
-	$sql.=" OR date LIKE '%".$requestData['search']['value']."%' ";
+	$getAllReceivedDocuments.=" ( docno LIKE '%".$requestData['search']['value']."%' ";    
+	$getAllReceivedDocuments.=" OR date LIKE '%".$requestData['search']['value']."%' ";
+	$getAllReceivedDocuments.=" OR type LIKE '%".$requestData['search']['value']."%' ";
+	$getAllReceivedDocuments.=" OR obrno LIKE '%".$requestData['search']['value']."%' ";
+	$getAllReceivedDocuments.=" OR dvno LIKE '%".$requestData['search']['value']."%' ";
+	$getAllReceivedDocuments.=" OR payee LIKE '%".$requestData['search']['value']."%' ";
+	$getAllReceivedDocuments.=" OR particulars LIKE '%".$requestData['search']['value']."%' ";
+	$getAllReceivedDocuments.=" OR amount LIKE '%".$requestData['search']['value']."%' ";
+	$getAllReceivedDocuments.=" OR origin LIKE '%".$requestData['search']['value']."%' )";
 
-	$sql.=" OR type LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR obrno LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR dvno LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR payee LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR particulars LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR amount LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR origin LIKE '%".$requestData['search']['value']."%' )";
+	$getAllReceivedDocuments .= " AND status = 'RECEIVED' AND origin = :office ORDER BY date_time  LIMIT " . $requestData['start'] . "," . $requestData['length'] . " ";
+
+	$getAllReceivedDocumentsData = $db_dts->prepare($getAllReceivedDocuments);
+	$getAllReceivedDocumentsData->execute(['office' => $office]);
+
+
+
+	$countFilter = " SELECT COUNT(docno) as id from tbl_documents where ";
+	$countFilter.=" ( docno LIKE '%".$requestData['search']['value']."%' ";    
+	$countFilter.=" OR date LIKE '%".$requestData['search']['value']."%' ";
+	$countFilter.=" OR type LIKE '%".$requestData['search']['value']."%' ";
+	$countFilter.=" OR obrno LIKE '%".$requestData['search']['value']."%' ";
+	$countFilter.=" OR dvno LIKE '%".$requestData['search']['value']."%' ";
+	$countFilter.=" OR payee LIKE '%".$requestData['search']['value']."%' ";
+	$countFilter.=" OR particulars LIKE '%".$requestData['search']['value']."%' ";
+	$countFilter.=" OR amount LIKE '%".$requestData['search']['value']."%' ";
+	$countFilter.=" OR origin LIKE '%".$requestData['search']['value']."%' )";
+	$countFilter .= " ORDER BY date_time LIMIT " . $requestData['length'] . " ";
+
+
+	$getrecordstmt = $db_dts->prepare($countFilter);
+	$getrecordstmt->execute() or die("track_received.php");
+	$getrecord1 = $getrecordstmt->fetch(PDO::FETCH_ASSOC);
+	$totalData = $getrecord['id'];
+	$totalFiltered = $totalData;
+	
 }
-$query=mysqli_query($conn, $sql) or die("track_incoming.php");
-$totalFiltered = mysqli_num_rows($query); // when there is a search parameter then we have to modify total number filtered rows as per search result. 
-$sql.=" ORDER BY date DESC  LIMIT ".$requestData['start']." ,".$requestData['length']."   ";
-
-// $sql.=" ORDER BY ". $columns[$requestData['order'][0]['column']]."   ".$requestData['order'][0]['dir']."  LIMIT ".$requestData['start']." ,".$requestData['length']."   ";
-/* $requestData['order'][0]['column'] contains colmun index, $requestData['order'][0]['dir'] contains order such as asc/desc  */	
-$query=mysqli_query($conn, $sql) or die("track_incoming.php");
 
 $data = array();
-while( $row=mysqli_fetch_array($query) ) {  // preparing an array
+
+while ($row = $getAllReceivedDocumentsData->fetch(PDO::FETCH_ASSOC)) {
 	$nestedData=array(); 
 
 	$nestedData[] = $row["docno"];
@@ -119,5 +153,3 @@ $json_data = array(
 			);
 
 echo json_encode($json_data);  // send data as json format
-
-?>

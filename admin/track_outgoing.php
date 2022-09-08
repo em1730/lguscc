@@ -7,16 +7,16 @@ session_start();
 // $dbname = "scc_doctrack";
 // $office = $_POST['office'];
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "scc_doctrack";
+// $servername = "192.168.0.5";
+// $username = "root";
+// $password = "1234";
+// $dbname = "scc_doctrack";
+// $office = $_POST['office'];
+
+include('../config/credentials.php');
+// $conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
+
 $office = $_POST['office'];
-
-
-$conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
-
-
 // $get_user_sql = "SELECT * FROM tbl_users WHERE user_id = :id";
 // $get_user_data = $con->prepare($get_user_sql);
 // $get_user_data->execute([':id'=>$user_id]);
@@ -36,86 +36,104 @@ $conn = mysqli_connect($servername, $username, $password, $dbname) or die("Conne
 
 
 // storing  request (ie, get/post) global array to a variable  
-$requestData= $_REQUEST;
+$requestData = $_REQUEST;
 
 
-$columns = array( 
-// datatable column index  => database column name
-0 =>'docno', 
-1 => 'date',
-2 => 'type',
-3 => 'obrno',
-4 => 'dvno',
-5 => 'payee',
-6 => 'particulars',
-7 => 'amount',
-8 => 'destination',
-	
-
-
+$columns = array(
+	// datatable column index  => database column name
+	0 => 'docno',
+	1 => 'date',
+	2 => 'type',
+	3 => 'obrno',
+	4 => 'dvno',
+	5 => 'payee',
+	6 => 'particulars',
+	7 => 'amount',
+	8 => 'destination',
 );
 
-
-
 // getting total number records without any search
-$sql = "SELECT docno, date, type, obrno, dvno, payee, particulars, amount, destination";
-$sql.=" FROM tbl_documents where status in ('CREATED', 'FORWARDED') and origin = '$office' ORDER BY date DESC LIMIT ".$requestData['start']." ,".$requestData['length']."  "; ;
-$query=mysqli_query($conn, $sql) or die("track_incoming.php");
-$totalData = mysqli_num_rows($query);
+$getAllIncomingDocuments = "SELECT * FROM tbl_documents where status in ('CREATED', 'FORWARDED') 
+ AND origin =:office ORDER BY date_time DESC LIMIT " . $requestData['start'] . "," . $requestData['length'] . "  ";
+
+$getAllIncomingDocumentsData = $db_dts->prepare($getAllIncomingDocuments);
+$getAllIncomingDocumentsData->execute(['office' => $office]);
+
+$countNoFilter = "SELECT COUNT(docno) as id from tbl_documents";
+$getrecordstmt = $db_dts->prepare($countNoFilter);
+$getrecordstmt->execute() or die("track_outgoing.php");
+$getrecord = $getrecordstmt->fetch(PDO::FETCH_ASSOC);
+$totalData = $getrecord['id'];
 $totalFiltered = $totalData;  // when there is no search parameter then total number rows = total number filtered rows.
 
+$getAllIncomingDocuments = "SELECT * from tbl_documents	where  ";
 
-$sql = "SELECT docno, date, type, obrno, dvno, payee, particulars, amount, destination";
-$sql.=" FROM tbl_documents where status in ('CREATED', 'FORWARDED') and origin = '$office'";
-if( !empty($requestData['search']['value']) ) {   // if there is a search parameter, $requestData['search']['value'] contains search parameter
-	$sql.=" AND ( docno LIKE '%".$requestData['search']['value']."%' ";    
-	$sql.=" OR date LIKE '%".$requestData['search']['value']."%' ";
+if (!empty($requestData['search']['value'])) {   // if there is a search parameter, $requestData['search']['value'] contains search parameter
+	$getAllIncomingDocuments .= " (docno LIKE '%" . $requestData['search']['value'] . "%' ";
+	$getAllIncomingDocuments .= " OR date LIKE '%" . $requestData['search']['value'] . "%' ";
+	$getAllIncomingDocuments .= " OR date_time LIKE '%" . $requestData['search']['value'] . "%' ";
+	$getAllIncomingDocuments .= " OR time LIKE '%" . $requestData['search']['value'] . "%' ";
+	$getAllIncomingDocuments .= " OR type LIKE '%" . $requestData['search']['value'] . "%' ";
+	$getAllIncomingDocuments .= " OR obrno LIKE '%" . $requestData['search']['value'] . "%' ";
+	$getAllIncomingDocuments .= " OR dvno LIKE '%" . $requestData['search']['value'] . "%' ";
+	$getAllIncomingDocuments .= " OR payee LIKE '%" . $requestData['search']['value'] . "%' ";
+	$getAllIncomingDocuments .= " OR particulars LIKE '%" . $requestData['search']['value'] . "%' ";
+	$getAllIncomingDocuments .= " OR amount LIKE '%" . $requestData['search']['value'] . "%' ";
+	$getAllIncomingDocuments .= " OR destination LIKE '%" . $requestData['search']['value'] . "%' ) ";
+	$getAllIncomingDocuments .= " AND status in ('CREATED', 'FORWARDED') AND origin = :office ORDER BY date_time  LIMIT " . $requestData['start'] . "," . $requestData['length'] . " ";
+	$getAllIncomingDocumentsData = $db_dts->prepare($getAllIncomingDocuments);
+	$getAllIncomingDocumentsData->execute(['office' => $office]);
 
-	$sql.=" OR obrno LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR dvno LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR payee LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR particulars LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR amount LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR destination LIKE '%".$requestData['search']['value']."%' )";
+	$countFilter = " SELECT COUNT(docno) as id from tbl_documents where ";
+	$countFilter .= " (docno LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR date LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR time LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR date_time LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR type LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR obrno LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR dvno LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR payee LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR particulars LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR amount LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR destination LIKE '%" . $requestData['search']['value'] . "%' )";
+	// $countFilter .= " ORDER BY date_time LIMIT " . $requestData['length'] . " ";
+
+	$getrecordstmt = $db_dts->prepare($countFilter);
+	$getrecordstmt->execute() or die("track_outgoing.php");
+	$getrecord1 = $getrecordstmt->fetch(PDO::FETCH_ASSOC);
+	$totalData = $getrecord['id'];
+	$totalFiltered = $totalData;
 }
-$query=mysqli_query($conn, $sql) or die("track_incoming.php");
-$totalFiltered = mysqli_num_rows($query); // when there is a search parameter then we have to modify total number filtered rows as per search result. 
-$sql.=" ORDER BY date DESC  LIMIT ".$requestData['start']." ,".$requestData['length']."   ";
 
-// $sql.=" ORDER BY ". $columns[$requestData['order'][0]['column']]."   ".$requestData['order'][0]['dir']."  LIMIT ".$requestData['start']." ,".$requestData['length']."   ";
-/* $requestData['order'][0]['column'] contains colmun index, $requestData['order'][0]['dir'] contains order such as asc/desc  */	
-$query=mysqli_query($conn, $sql) or die("track_incoming.php");
 
 $data = array();
-while( $row=mysqli_fetch_array($query) ) {  // preparing an array
-	$nestedData=array(); 
+
+while ($row = $getAllIncomingDocumentsData->fetch(PDO::FETCH_ASSOC)) {
+	$nestedData = array();
 
 	$nestedData[] = $row["docno"];
 	$nestedData[] = $row["date"];
 	$nestedData[] = $row["type"];
 	$nestedData[] = $row["obrno"];
 	$nestedData[] = $row["dvno"];
-	if ($row["payee"] == 'Please select...'){
+	if ($row["payee"] == 'Please select...') {
 		$nestedData[] = " ";
-		}else{
+	} else {
 		$nestedData[] = $row["payee"];
-		}		
+	}
 	$nestedData[] = $row["particulars"];
-	$nestedData[] = number_format($row["amount"],2);
+	$nestedData[] = number_format($row["amount"], 2);
 	$nestedData[] = $row["destination"];
 
 	$data[] = $nestedData;
 }
 
 
-
 $json_data = array(
-			"draw"            => intval( $requestData['draw'] ),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-			"recordsTotal"    => intval( $totalData ),  // total number of records
-			"recordsFiltered" => intval( $totalFiltered ), // total number of records after searching, if there is no searching then totalFiltered = totalData
-			"data"            => $data   // total data array
-			);
+	"draw"            => intval($requestData['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+	"recordsTotal"    => intval($totalData),  // total number of records
+	"recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
+	"data"            => $data   // total data array
+);
 
 echo json_encode($json_data);  // send data as json format
-
-?>

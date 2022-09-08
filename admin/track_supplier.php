@@ -1,13 +1,10 @@
 <?php
 session_start();
 /* Database connection start */
-$servername = "192.168.0.1";
-$username = "root";
-$password = "1234";
-$dbname = "scc_doctrack";
 
+include('../config/db_config.php');
 
-$conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
+// $conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
 
 
 // $get_user_sql = "SELECT * FROM tbl_users WHERE user_id = :id";
@@ -29,75 +26,127 @@ $conn = mysqli_connect($servername, $username, $password, $dbname) or die("Conne
 
 
 // storing  request (ie, get/post) global array to a variable  
-$requestData= $_REQUEST;
+$requestData = $_REQUEST;
 
 
-$columns = array( 
-// datatable column index  => database column name
-0 => 'objid',
-1 =>'code', 
-2 => 'name_supplier',
-3 => 'owner',
-4 => 'address',
-5 => 'contact_no',
+$columns = array(
+	// datatable column index  => database column name
+	0 => 'objid',
+	1 => 'code',
+	2 => 'name_supplier',
+	3 => 'owner',
+	4 => 'address',
+	5 => 'contact_no',
 
 
 
 );
 
 
+$getAllSupplier = "SELECT * FROM tbl_suppliers order by objid desc LIMIT " . $requestData['start'] . "," . $requestData['length'] . " ";
+$getAllSupplierData = $con->prepare($getAllSupplier);
+$getAllSupplierData->execute();
+
+
+
+$countNoFilter = "SELECT COUNT(objid) as id from tbl_suppliers";
+$getrecordstmt = $con->prepare($countNoFilter);
+$getrecordstmt->execute() or die("track_supplier.php");
+$getrecord = $getrecordstmt->fetch(PDO::FETCH_ASSOC);
+$totalData = $getrecord['id'];
+
+$totalFiltered = $totalData;
+
+
+
+
 
 // getting total number records without any search
-$sql = "SELECT * FROM tbl_suppliers";
-$query=mysqli_query($conn, $sql) or die("track_supplier.php");
-$totalData = mysqli_num_rows($query);
-$totalFiltered = $totalData;  // when there is no search parameter then total number rows = total number filtered rows.
+// $sql = "SELECT * FROM tbl_suppliers";
+// $query = mysqli_query($conn, $sql) or die("track_supplier.php	");
+// $totalData = mysqli_num_rows($query);
+// $totalFiltered = $totalData;  // when there is no search parameter then total number rows = total number filtered rows.
 
 
-$sql = "SELECT * FROM tbl_suppliers where 1=1";
+// $sql = "SELECT * FROM tbl_suppliers where 1=1";
 
-if( !empty($requestData['search']['value']) ) {   // if there is a search parameter, $requestData['search']['value'] contains search parameter
-	$sql.=" AND ( code LIKE '%".$requestData['search']['value']."%' ";    
-	$sql.=" OR name_supplier LIKE '%".$requestData['search']['value']."%' ";
 
-	$sql.=" OR owner LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR address LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR contact_no LIKE '%".$requestData['search']['value']."%' ) ";
-	// $sql.=" OR status LIKE '%".$requestData['search']['value']."%' )";
-	
+
+
+
+$getAllSupplier = "SELECT * from tbl_suppliers where 1=1 ";
+
+
+if (!empty($requestData['search']['value'])) {   // if there is a search parameter, $requestData['search']['value'] contains search parameter
+	$getAllSupplier .= "AND (code LIKE '%" . $requestData['search']['value'] . "%' ";
+	$getAllSupplier .= " OR name_supplier LIKE '%" . $requestData['search']['value'] . "%' ";
+	$getAllSupplier .= " OR owner LIKE '%" . $requestData['search']['value'] . "%' ";
+	$getAllSupplier .= " OR address LIKE '%" . $requestData['search']['value'] . "%' ";
+	$getAllSupplier .= " OR contact_no LIKE '%" . $requestData['search']['value'] . "%' )";
+	$getAllSupplier .= "  ORDER BY objid LIMIT " . $requestData['start'] . "," . $requestData['length'] . " ";
+	$getAllSupplierData = $con->prepare($getAllSupplier);
+	$getAllSupplierData->execute();
+
+
+	$countFilter = " SELECT COUNT(objid) as id from tbl_suppliers where ";
+	$countFilter .= " (code LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR name_supplier LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR owner LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR address LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR contact_no LIKE '%" . $requestData['search']['value'] . "%' ) ";
+	$countFilter .= " ORDER BY objid LIMIT " . $requestData['length'] . " ";
+
+	$getrecordstmt = $con->prepare($countFilter);
+	$getrecordstmt->execute() or die("track_supplier.php");
+	$getrecord1 = $getrecordstmt->fetch(PDO::FETCH_ASSOC);
+	$totalData = $getrecord['id'];
+	$totalFiltered = $totalData;
 }
-$query=mysqli_query($conn, $sql) or die("track_supplier.php");
-$totalFiltered = mysqli_num_rows($query); // when there is a search parameter then we have to modify total number filtered rows as per search result. 
-$sql.=" ORDER BY name_supplier, code LIMIT ".$requestData['start']." ,".$requestData['length']."   ";
+
+
+
+
+
+
+
+// $query = mysqli_query($conn, $sql) or die("track_supplier.php");
+// $totalFiltered = mysqli_num_rows($query); // when there is a search parameter then we have to modify total number filtered rows as per search result. 
+// $sql .= " ORDER BY name_supplier, code LIMIT " . $requestData['start'] . " ," . $requestData['length'] . "   ";
 
 // $sql.=" ORDER BY ". $columns[$requestData['order'][0]['column']]."   ".$requestData['order'][0]['dir']."  LIMIT ".$requestData['start']." ,".$requestData['length']."   ";
-/* $requestData['order'][0]['column'] contains colmun index, $requestData['order'][0]['dir'] contains order such as asc/desc  */	
-$query=mysqli_query($conn, $sql) or die("track_supplier.php");
+/* $requestData['order'][0]['column'] contains colmun index, $requestData['order'][0]['dir'] contains order such as asc/desc  */
+// $query = mysqli_query($conn, $sql) or die("track_supplier.php");
 
 $data = array();
-while( $row=mysqli_fetch_array($query) ) {  // preparing an array
-	$nestedData=array(); 
+
+
+while ($row = $getAllSupplierData->fetch(PDO::FETCH_ASSOC)) {
+	$nestedData = array();
+
 	$nestedData[] = $row["objid"];
 	$nestedData[] = $row["code"];
 	$nestedData[] = $row["name_supplier"];
 	$nestedData[] = $row["owner"];
 	$nestedData[] = $row["address"];
 	$nestedData[] = $row["contact_no"];
-	
-
 
 	$data[] = $nestedData;
 }
 
+// while ($row = mysqli_fetch_array($query)) {  // preparing an array
+
+
+
+// 	$data[] = $nestedData;
+// }
+
 
 
 $json_data = array(
-			"draw"            => intval( $requestData['draw'] ),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-			"recordsTotal"    => intval( $totalData ),  // total number of records
-			"recordsFiltered" => intval( $totalFiltered ), // total number of records after searching, if there is no searching then totalFiltered = totalData
-			"data"            => $data   // total data array
-			);
+	"draw"            => intval($requestData['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+	"recordsTotal"    => intval($totalData),  // total number of records
+	"recordsFiltered" => intval($totalFiltered), // total number of records after searching, if there is no searching then totalFiltered = totalData
+	"data"            => $data   // total data array
+);
 
 echo json_encode($json_data);  // send data as json format
-
-?>

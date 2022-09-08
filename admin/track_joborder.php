@@ -1,12 +1,9 @@
 <?php
 session_start();
 /* Database connection start */
-$servername = "192.168.0.1";
-$username = "root";
-$password = "1234";
-$dbname = "scc_doctrack";
+include('../config/db_config.php');
 
-$conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
+// $conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
 
 
 // $get_user_sql = "SELECT * FROM tbl_users WHERE user_id = :id";
@@ -33,58 +30,81 @@ $requestData= $_REQUEST;
 
 $columns = array( 
 // datatable column index  => database column name
-0 => 'objid',
-1 =>'controlno', 
-2 => 'firstname',
-3 => 'middlename',
-4 => 'lastname',
-5 => 'department',
-6 => 'status',
 
-
+0 => 'idno',
+1 => 'controlno', 
+2 => 'fullname',
+3 => 'rate',
+4 => 'office',
 
 );
 
 
-
-// getting total number records without any search
-$sql = "SELECT * FROM tbl_joborder";
-$query=mysqli_query($conn, $sql) or die("track_joborder.php");
-$totalData = mysqli_num_rows($query);
-$totalFiltered = $totalData;  // when there is no search parameter then total number rows = total number filtered rows.
+$getAllJobOrder = "SELECT * FROM tbl_joborder where status='Active' LIMIT " . $requestData['start'] . "," . $requestData['length'] . " ";
+$getAllJobOrderData = $con->prepare($getAllJobOrder);
+$getAllJobOrderData->execute();
 
 
-$sql = "SELECT * FROM tbl_joborder where 1=1";
+$countNoFilter = "SELECT COUNT(idno) as id from tbl_joborder";
+$getrecordstmt = $con->prepare($countNoFilter);
+$getrecordstmt->execute() or die("track_joborder.php");
+$getrecord = $getrecordstmt->fetch(PDO::FETCH_ASSOC);
+$totalData = $getrecord['id'];
+
+$totalFiltered = $totalData;
+
+$getAllJobOrder = "SELECT * FROM tbl_joborder where ";
 
 if( !empty($requestData['search']['value']) ) {   // if there is a search parameter, $requestData['search']['value'] contains search parameter
-	$sql.=" AND ( controlno LIKE '%".$requestData['search']['value']."%' ";    
-	$sql.=" OR firstname LIKE '%".$requestData['search']['value']."%' ";
+	$getAllJobOrder .=" (idno LIKE '%".$requestData['search']['value']."%' ";    
+	$getAllJobOrder .=" OR objid LIKE '%".$requestData['search']['value']."%' ";
+	$getAllJobOrder .=" OR controlno LIKE '%".$requestData['search']['value']."%' ";
+	$getAllJobOrder .=" OR firstname LIKE '%".$requestData['search']['value']."%' ";
+	$getAllJobOrder .=" OR middlename LIKE '%".$requestData['search']['value']."%' ";
+	$getAllJobOrder .=" OR lastname LIKE '%".$requestData['search']['value']."%' ";
+	$getAllJobOrder .=" OR rate LIKE '%".$requestData['search']['value']."%' ";
+	$getAllJobOrder .=" OR department LIKE '%".$requestData['search']['value']."%' )";
+	$getAllJobOrder .= " AND status ='Active' LIMIT " . $requestData['start'] . "," . $requestData['length'] . " ";
+	$getAllJobOrderData = $con->prepare($getAllJobOrder);
+	$getAllJobOrderData->execute();
 
-	$sql.=" OR middlename LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR lastname LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR department LIKE '%".$requestData['search']['value']."%' ";
-	$sql.=" OR status LIKE '%".$requestData['search']['value']."%' )";
+
+
+	$countFilter = " SELECT COUNT(idno) as id from tbl_joborder where ";
+	$countFilter .= " (idno LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR objid LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR controlno LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR firstname LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR middlename LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR lastname LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR rate LIKE '%" . $requestData['search']['value'] . "%' ";
+	$countFilter .= " OR department LIKE '%" . $requestData['search']['value'] . "%' ) ";
+	$countFilter .= " AND status ='Active' LIMIT " . $requestData['length'] . " ";
+
+
+
+	$getrecordstmt = $con->prepare($countFilter);
+	$getrecordstmt->execute() or die("track_joborder.php");
+	$getrecord1 = $getrecordstmt->fetch(PDO::FETCH_ASSOC);
+	$totalData = $getrecord['id'];
+	$totalFiltered = $totalData;
+
+
+
+
 	
 }
-$query=mysqli_query($conn, $sql) or die("track_joborder.php");
-$totalFiltered = mysqli_num_rows($query); // when there is a search parameter then we have to modify total number filtered rows as per search result. 
-$sql.=" ORDER BY lastname,controlno LIMIT ".$requestData['start']." ,".$requestData['length']."   ";
-
-// $sql.=" ORDER BY ". $columns[$requestData['order'][0]['column']]."   ".$requestData['order'][0]['dir']."  LIMIT ".$requestData['start']." ,".$requestData['length']."   ";
-/* $requestData['order'][0]['column'] contains colmun index, $requestData['order'][0]['dir'] contains order such as asc/desc  */	
-$query=mysqli_query($conn, $sql) or die("track_joborder.php");
 
 $data = array();
-while( $row=mysqli_fetch_array($query) ) {  // preparing an array
-	$nestedData=array(); 
-	$nestedData[] = $row["objid"];
-	$nestedData[] = $row["controlno"];
-	$nestedData[] = $row["firstname"];
-	$nestedData[] = $row["middlename"];
-	$nestedData[] = $row["lastname"];
-	$nestedData[] = $row["department"];
-	$nestedData[] = $row["status"];
 
+while($row = $getAllJobOrderData->fetch(PDO::FETCH_ASSOC)) {  // preparing an array
+	$nestedData=array(); 
+
+	$nestedData[] = $row["idno"];
+	$nestedData[] = $row["controlno"];
+	$nestedData[] = strtoupper($row["firstname"].' '.$row["middlename"].' '.$row["lastname"]);
+	$nestedData[] = $row["rate"];
+	$nestedData[] = $row["department"];
 
 	$data[] = $nestedData;
 }

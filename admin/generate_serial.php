@@ -2,7 +2,8 @@
 
 session_start();
 
-include('../config/db_config.php');
+
+include('../config/credentials.php');
 
 if (isset($_POST['type'])) {
 //     echo "<pre>";
@@ -34,13 +35,13 @@ for ($i=0; $i<$k; $i++)
 }
 
 function check_serial(){
-  global $con;
+  global $db_dts;
   global $docno;
  // echo $docno;
 
   $check_docno_sql = "SELECT docno FROM tbl_documents USE INDEX (index_docno) where docno = :docno";
       
-  $check_docno_data = $con->prepare($check_docno_sql);
+  $check_docno_data = $db_dts->prepare($check_docno_sql);
   $check_docno_data ->execute([
       ':docno' => $docno
 ]);

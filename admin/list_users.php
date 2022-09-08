@@ -34,14 +34,19 @@ if (!isset($_SESSION['id'])) {
     <div class="content-wrapper">
 
       <div class="content-header">
-        <?php include('dashboard.php'); ?>
+
       </div>
 
 
       <section class="content">
         <div class="card">
           <div class="card-header bg-dark">
-            <h4>Incoming Documents </h4>
+
+            <h4>User Masterlists 
+
+              <a href="add_user.php" style="float:right;" type="button" class="btn btn-dark bg-gradient-dark">
+                <i class="nav-icon fa fa-plus-square"></i></a>
+            </h4>
           </div>
 
           <div class="card-body">
@@ -50,15 +55,10 @@ if (!isset($_SESSION['id'])) {
                 <div class="table-responsive">
                   <table id="users" name="user" class="table table-bordered table-striped">
                     <thead align="center">
-                      <th>Document No.</th>
-                      <th>Date</th>
-                      <th>Type</th>
-                      <th>OBR No.</th>
-                      <th>DV No.</th>
-                      <th>Payee</th>
-                      <th>Particulars</th>
-                      <th>Amount</th>
-                      <th>Origin</th>
+                      <th>ID No.</th>
+                      <th>Full Name</th>
+                      <th>Username</th>
+                      <th>Department</th>
                       <th>Options</th>
 
                     </thead>
@@ -88,9 +88,7 @@ if (!isset($_SESSION['id'])) {
     </div>
 
 
-    <div class="col-md-10">
-      <input type="hidden" id="department2" readonly class="form-control" name="department2" placeholder="Department2" value="<?php echo $db_department; ?>">
-    </div>
+   
 
     <?php include('footer.php') ?>
   </div>
@@ -128,7 +126,6 @@ if (isset($_SESSION['status']) && $_SESSION['status'] != '') {
   $(document).ready(function() {
 
 
-    var office = $('#department2').val();
     var dataTable = $('#users').DataTable({
 
       page: true,
@@ -137,10 +134,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] != '') {
       serverSide: true,
       scrollX: false,
       ajax: {
-        url: "track_incoming.php",
-        data: {
-          office: office
-        },
+        url: "search_users.php",
         type: "post",
         error: function(xhr, b, c) {
           console.log(
@@ -166,36 +160,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] != '') {
 
 
 
-    $('#users tbody').on('click', '#button_receive', function() {
-      // alert ('hello');
-      // var row = $(this).closest('tr');
-      var table = $('#users').DataTable();
-      var data = table.row($(this).parents('tr')).data();
-      //  alert (data[0]);
-      //  var data = $('#users').DataTable().row('.selected').data(); //table.row(row).data().docno;
-      var type = data[2];
-      var docno = data[0];
 
-      if (type == "DV" || type == "OBR" || type == "DWP" || type == "PYL" || type == "LR" || type == "RIS" || type == "PO" || type == "PR") {
-        window.open("receive_incoming_dv.php?docno=" + docno, '_parent');
-      } else {
-
-        window.open("receive_incoming.php?docno=" + docno, '_parent');
-      }
-      //  var table = $('#users').DataTable();
-      //   if ($(this).hasClass('selected')){
-      //       $(this).removeClass('selected');
-
-      //   }else{
-      //     table.$('tr.selected').removeClass('selected');
-      //     $(this).addClass('selected');
-
-      //   var data = $('#users').DataTable().row('.selected').data(); //table.row(row).data().docno;
-      //   var docno = data[0];
-      //   window.open("receive_incoming.php?docno=" + docno,'_parent');
-      // alert(docno);
-      //    }
-    });
   });
 
   $(document).on('click', 'button[data-role=confirm_delete]', function(event) {
